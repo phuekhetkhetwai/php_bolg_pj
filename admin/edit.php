@@ -9,6 +9,11 @@ if (empty($_SESSION["user"])) {
 
 $user = $_SESSION["user"];
 
+if($user["role"] != 1) {
+    header("location: login.php");
+    exit();
+  }
+
 if ($_POST) {
     $id = $_POST["id"];
     $title = $_POST["title"];
@@ -77,12 +82,12 @@ $result = $statement->fetch();
                             <div class="form-group">
                                 <input type="hidden" name="id" value="<?= $result['id'] ?>">
                                 <label for="title">Title</label>
-                                <input type="text" name="title" id="title" class="form-control" value="<?= $result['title'] ?>">
+                                <input type="text" name="title" id="title" class="form-control" value="<?= $result['title'] ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="content">Content</label>
-                                <textarea name="content" id="content" class="form-control" rows="8"><?= $result['content'] ?></textarea>
+                                <textarea name="content" id="content" class="form-control" rows="8" required><?= $result['content'] ?></textarea>
                             </div>
 
                             <div class="form-group">

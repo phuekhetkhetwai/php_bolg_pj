@@ -8,7 +8,6 @@ if (empty($_SESSION["user"])) {
 }
 
 $user = $_SESSION["user"];
-
 if($user["role"] != 1) {
   header("location: login.php");
   exit();
@@ -35,32 +34,32 @@ if(!empty($_GET["pageno"])) {
   $pageno = 1;
 }
 
-$numOfRecs = 3;
+$numOfRecs = 2;
 $offset = ($pageno - 1) * $numOfRecs;
 
 if(isset($_POST["search"]) || isset($_COOKIE["search"])) {
 
   $searchKey = isset($_POST["search"]) ? $_POST["search"] : $_COOKIE["search"];
 
-  $statement = $db->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
+  $statement = $db->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
   $statement->execute();
   $results = $statement->fetchAll();
 
   $total_pages = ceil(count($results) / $numOfRecs);
 
-  $statement = $db->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfRecs");
+  $statement = $db->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfRecs");
   $statement->execute();
   $datas = $statement->fetchAll();
 
 } else {
 
-  $statement = $db->prepare("SELECT * FROM posts ORDER BY id DESC");
+  $statement = $db->prepare("SELECT * FROM users ORDER BY id DESC");
   $statement->execute();
   $results = $statement->fetchAll();
 
   $total_pages = ceil(count($results) / $numOfRecs);
 
-  $statement = $db->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfRecs");
+  $statement = $db->prepare("SELECT * FROM users ORDER BY id DESC LIMIT $offset,$numOfRecs");
   $statement->execute();
   $datas = $statement->fetchAll();
 
@@ -75,19 +74,20 @@ if(isset($_POST["search"]) || isset($_COOKIE["search"])) {
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Blog Listings</h3>
+            <h3 class="card-title">User Listings</h3>
           </div>
           <!-- /.card-header -->
           <div class="card-body">
             <div class="mb-3">
-              <a href="add.php" type="button" class="btn btn-success">New Blog Post</a>
+              <a href="user_add.php" type="button" class="btn btn-success">Create new user</a>
             </div>
             <table class="table table-bordered">
               <thead>
                 <tr>
                   <th style="width: 10px">No.</th>
-                  <th>Title</th>
-                  <th>Content</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
                   <th style="width: 150px">Actions</th>
                 </tr>
               </thead>
@@ -97,11 +97,12 @@ if(isset($_POST["search"]) || isset($_COOKIE["search"])) {
                   <?php foreach ($datas as $data): ?>
                     <tr>
                       <td><?= $i ?></td>
-                      <td><?= $data["title"] ?></td>
-                      <td><?= substr($data["content"], 0, 100) ?></td>
+                      <td><?= $data["name"] ?></td>
+                      <td><?= $data["email"] ?></td>
+                      <td><?php if($data["role"] == 0){echo "user";}else{echo "admin";}?></td>
                       <td>
-                        <a href="edit.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="delete.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</a>
+                        <a href="user_edit.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="user_delete.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
                       </td>
                     </tr>
                   <?php $i++; ?>

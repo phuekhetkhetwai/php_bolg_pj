@@ -8,6 +8,10 @@ if (empty($_SESSION["user"])) {
 }
 
 $user = $_SESSION["user"];
+if($user["role"] != 1) {
+    header("location: login.php");
+    exit();
+  }
 
 $id = $_GET["id"];
 

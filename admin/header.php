@@ -32,8 +32,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </li>
       </ul>
 
+      <?php
+        $link = $_SERVER["PHP_SELF"];
+        // print_r($link);// /blog/admin/index.php   /blog/admin/user_list.php
+        $array_link = explode('/',$link);
+        // print_r($array_link);//Array ( [0] => [1] => blog [2] => admin [3] => index.php )
+        $page = end($array_link);
+        // print_r($page);//index.php , user_list.php
+
+       ?>
+
       <!-- SEARCH FORM -->
-      <form action="index.php" method="post" class="form-inline ml-3">
+      <form action="<?php echo $page == 'index.php' ? 'index.php' : 'user_list.php' ?>" method="post" class="form-inline ml-3">
         <div class="input-group input-group-sm">
           <input class="form-control form-control-navbar" type="search" name="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
@@ -83,6 +93,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   Blogs
                 </p>
               </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="user_list.php" class="nav-link">
+                <i class="nav-icon fas fa-users"></i>
+                <p>
+                  Users
+                </p>
+              </a>
+
             </li>
           </ul>
         </nav>
