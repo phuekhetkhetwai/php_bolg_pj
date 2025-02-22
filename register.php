@@ -2,32 +2,52 @@
     require "config/config.php";
 
     if($_POST) {
-      $name = $_POST["name"];
-      $email = $_POST["email"];
-      $password = $_POST["password"];
 
-      $statement = $db->prepare("SELECT * FROM users WHERE email=:email");
+      if (empty($_POST["name"]) || empty($_POST["email"]) || empty($_POST["password"]) || strlen($_POST["password"]) < 4 ) {
+        if(empty($_POST["name"])) {
+            $nameError = "Name cannot be null";
+        }
 
-      $statement->execute([
-        "email" => $email,
-    ]);
+        if(empty($_POST["email"])) {
+            $emailError = "Email cannot be null";
+        }
 
-    $user = $statement->fetch();
+        if(empty($_POST["password"])) {
+            $passwordError = "Password cannot be null";
+        }
 
-    if($user) {
-      echo "<script>alert('Email duplicated!!');</script>";
+        if(!empty($_POST["password"]) && strlen($_POST["password"]) < 4 ) {
+            $passwordError = "Password shoule be long.";
+        }
+        
     } else {
+        $name = $_POST["name"];
+        $email = $_POST["email"];
+        $password = $_POST["password"];
 
-      $statement = $db->prepare("INSERT INTO users (name,email,password) VALUE (:name,:email,:password)");
-    
-      $result = $statement->execute([
-          "name" => $name,
+        $statement = $db->prepare("SELECT * FROM users WHERE email=:email");
+
+        $statement->execute([
           "email" => $email,
-          "password" => $password,
       ]);
 
-      if($result) {
-        echo "<script>alert('Successfully register, you can now login');window.location.href='login.php';</script>";
+      $user = $statement->fetch();
+
+      if($user) {
+        echo "<script>alert('Email duplicated!!');</script>";
+      } else {
+
+        $statement = $db->prepare("INSERT INTO users (name,email,password) VALUE (:name,:email,:password)");
+      
+        $result = $statement->execute([
+            "name" => $name,
+            "email" => $email,
+            "password" => $password,
+        ]);
+
+        if($result) {
+          echo "<script>alert('Successfully register, you can now login');window.location.href='login.php';</script>";
+        }
       }
     }
     
@@ -65,8 +85,9 @@
       <p class="login-box-msg">Register New Account</p>
 
       <form action="register.php" method="post">
+      <p class="text-danger"><?php echo empty($nameError) ? "" : "*".$nameError ?></p>
       <div class="input-group mb-3">
-          <input type="text" name="name" class="form-control" placeholder="Name" required>
+          <input type="text" name="name" class="form-control" placeholder="Name">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -74,8 +95,9 @@
           </div>
         </div>
 
+        <p class="text-danger"><?php echo empty($emailError) ? "" : "*".$emailError ?></p>
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Email" required>
+          <input type="email" name="email" class="form-control" placeholder="Email">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -83,8 +105,9 @@
           </div>
         </div>
 
+        <p class="text-danger"><?php echo empty($passwordError) ? "" : "*".$passwordError ?></p>
         <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password" required>
+          <input type="password" name="password" class="form-control" placeholder="Password">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>

@@ -10,20 +10,27 @@ if (empty($_SESSION["user"])) {
 $user = $_SESSION["user"];
 
 if ($_POST) {
-  $content = $_POST["content"];
-  $author_id = $user['id'];
-  $post_id = $_GET["id"];
+  if (empty($_POST["content"]) ) {
+    if(empty($_POST["content"])) {
+        $contentError = "Comment cannot be null";
+    }
 
-  $statement = $db->prepare("INSERT INTO comments (content,author_id,post_id) VALUE (:content,:author_id,:post_id)");
+} else {
+    $content = $_POST["content"];
+    $author_id = $user['id'];
+    $post_id = $_GET["id"];
 
-  $result = $statement->execute([
-    "content" => $content,
-    "author_id" => $author_id,
-    "post_id" => $post_id,
-  ]);
+    $statement = $db->prepare("INSERT INTO comments (content,author_id,post_id) VALUE (:content,:author_id,:post_id)");
 
-  if ($result) {
-    header("location: blogdetail.php?id=" . $_GET["id"]);
+    $result = $statement->execute([
+      "content" => $content,
+      "author_id" => $author_id,
+      "post_id" => $post_id,
+    ]);
+
+    if ($result) {
+      header("location: blogdetail.php?id=" . $_GET["id"]);
+    }
   }
 }
 
@@ -130,6 +137,7 @@ if ($_POST) {
                 <div class="card-footer">
                   <form action="" method="post">
                     <div>
+                    <p class="text-danger"><?php echo empty($contentError) ? "" : "*".$contentError ?></p>
                       <input type="text" name="content" class="form-control form-control-sm" placeholder="Press enter to post comment">
                     </div>
                   </form>

@@ -15,47 +15,62 @@ if($user["role"] != 1) {
   }
 
 if ($_POST) {
-    $id = $_POST["id"];
-    $title = $_POST["title"];
-    $content = $_POST["content"];
 
-    if (($_FILES["image"]["name"] != null)) {
-        $name = $_FILES["image"]["name"];
-        $type = $_FILES["image"]["type"];
-        $tmp_name = $_FILES["image"]["tmp_name"];
+    if (empty($_POST["title"]) || empty($_POST["content"])) {
+        if(empty($_POST["title"])) {
+            $titleError = "Title cannot be null";
+        }
 
-        if ($type != "image/jpeg" && $type != "image/png") {
+        if(empty($_POST["content"])) {
+            $contentError = "Content cannot be null";
+        }
+    }else {
+        $id = $_POST["id"];
+        $title = $_POST["title"];
+        $content = $_POST["content"];
 
-            echo "<script>alert('Image must be png,jpg,jpeg!')</script>";
-        } else {
-            move_uploaded_file($tmp_name, "images/$name");
+        if (($_FILES["image"]["name"] != null)) {
+            $name = $_FILES["image"]["name"];
+            $type = $_FILES["image"]["type"];
+            $tmp_name = $_FILES["image"]["tmp_name"];
 
-            $statement = $db->prepare("UPDATE posts SET title=:title, content=:content, image=:image WHERE id=:id");
+            if ($type != "image/jpeg" && $type != "image/png") {
 
+                echo "<script>alert('Image must be png,jpg,jpeg!')</script>";
+            } else {
+                move_uploaded_file($tmp_name, "images/$name");
+
+                $statement = $db->prepare("UPDATE posts SET title=:title, content=:content, image=:image WHERE id=:id");
+
+                $result = $statement->execute([
+                    "id" => $id,
+                    "title" => $title,
+                    "content" => $content,
+                    "image" => $name,
+                ]);
+
+                if ($result) {
+                    echo "<script>alert('Successfully Updated.');window.location.href='index.php';</script>";
+                }
+            }
+
+        }else {
+
+            $statement = $db->prepare("UPDATE posts SET title=:title, content=:content WHERE id=:id");
             $result = $statement->execute([
                 "id" => $id,
                 "title" => $title,
                 "content" => $content,
-                "image" => $name,
             ]);
-
+    
             if ($result) {
                 echo "<script>alert('Successfully Updated.');window.location.href='index.php';</script>";
             }
-        }
-    } else {
-        $statement = $db->prepare("UPDATE posts SET title=:title, content=:content WHERE id=:id");
-        $result = $statement->execute([
-            "id" => $id,
-            "title" => $title,
-            "content" => $content,
-        ]);
-
-        if ($result) {
-            echo "<script>alert('Successfully Updated.');window.location.href='index.php';</script>";
-        }
     }
+    }
+    
 }
+
 $id = $_GET["id"];
 
 $statement = $db->prepare("SELECT * FROM posts WHERE id=:id");
@@ -81,13 +96,13 @@ $result = $statement->fetch();
                         <form action="" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <input type="hidden" name="id" value="<?= $result['id'] ?>">
-                                <label for="title">Title</label>
-                                <input type="text" name="title" id="title" class="form-control" value="<?= $result['title'] ?>" required>
+                                <label for="title">Title</label><p class="text-danger"><?php echo empty($titleError) ? "" : "*".$titleError ?></p>
+                                <input type="text" name="title" id="title" class="form-control" value="<?= $result['title'] ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="content">Content</label>
-                                <textarea name="content" id="content" class="form-control" rows="8" required><?= $result['content'] ?></textarea>
+                                <label for="content">Content</label><p class="text-danger"><?php echo empty($contentError) ? "" : "*".$contentError ?></p>
+                                <textarea name="content" id="content" class="form-control" rows="8"><?= $result['content'] ?></textarea>
                             </div>
 
                             <div class="form-group">

@@ -9,51 +9,61 @@ if (empty($_SESSION["user"])) {
 
 $user = $_SESSION["user"];
 
-if($user["role"] != 1) {
+if ($user["role"] != 1) {
     header("location: login.php");
     exit();
-  }
+}
 
-if($_POST) {
-    $title = $_POST["title"];
-    $content = $_POST["content"];
-    $name = $_FILES["image"]["name"];
-    $type = $_FILES["image"]["type"];
-    $tmp_name = $_FILES["image"]["tmp_name"];
+if ($_POST) {
 
-    if($name != null){
-        if($type != "image/jpeg" && $type != "image/png") {
+    if (empty($_POST["title"]) || empty($_POST["content"])) {
+        if(empty($_POST["title"])) {
+            $titleError = "Title cannot be null";
+        }
 
-            echo "<script>alert('Image must be png,jpg,jpeg!')</script>";
-    
-        }else {
-            move_uploaded_file($tmp_name, "images/$name");
-    
-            $statement = $db->prepare("INSERT INTO posts (title,content,image,author_id) VALUE (:title,:content,:image,:author_id)");
-    
+        if(empty($_POST["content"])) {
+            $contentError = "Content cannot be null";
+        }
+    } else {
+        $title = $_POST["title"];
+        $content = $_POST["content"];
+        $name = $_FILES["image"]["name"];
+        $type = $_FILES["image"]["type"];
+        $tmp_name = $_FILES["image"]["tmp_name"];
+
+        if ($name != null) {
+            if ($type != "image/jpeg" && $type != "image/png") {
+
+                echo "<script>alert('Image must be png,jpg,jpeg!')</script>";
+            } else {
+                move_uploaded_file($tmp_name, "images/$name");
+
+                $statement = $db->prepare("INSERT INTO posts (title,content,image,author_id) VALUE (:title,:content,:image,:author_id)");
+
+                $result = $statement->execute([
+                    "title" => $title,
+                    "content" => $content,
+                    "image" => $name,
+                    "author_id" => $user["id"],
+                ]);
+
+                if ($result) {
+                    echo "<script>alert('Successfully added.');window.location.href='index.php'</script>";
+                }
+            }
+        } else {
+            $statement = $db->prepare("INSERT INTO posts (title,content,author_id) VALUE (:title,:content,:author_id)");
+
             $result = $statement->execute([
                 "title" => $title,
                 "content" => $content,
-                "image" => $name,
                 "author_id" => $user["id"],
             ]);
-            
-            if($result) {
+
+            if ($result) {
                 echo "<script>alert('Successfully added.');window.location.href='index.php'</script>";
             }
         }
-    }else {
-        $statement = $db->prepare("INSERT INTO posts (title,content,author_id) VALUE (:title,:content,:author_id)");
-    
-            $result = $statement->execute([
-                "title" => $title,
-                "content" => $content,
-                "author_id" => $user["id"],
-            ]);
-            
-            if($result) {
-                echo "<script>alert('Successfully added.');window.location.href='index.php'</script>";
-            }
     }
 }
 ?>
@@ -70,13 +80,13 @@ if($_POST) {
                     <div class="card-body">
                         <form action="add.php" method="post" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="title">Title</label>
-                                <input type="text" name="title" id="title" class="form-control" required>
+                                <label for="title">Title</label><p class="text-danger"><?php echo empty($titleError) ? "" : "*".$titleError ?></p>
+                                <input type="text" name="title" id="title" class="form-control">
                             </div>
 
                             <div class="form-group">
-                                <label for="content">Content</label>
-                                <textarea name="content" id="content" class="form-control" rows="8" required></textarea>
+                                <label for="content">Content</label><p class="text-danger"><?php echo empty($contentError) ? "" : "*".$contentError ?></p>
+                                <textarea name="content" id="content" class="form-control" rows="8"></textarea>
                             </div>
 
                             <div class="form-group">
