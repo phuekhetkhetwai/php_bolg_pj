@@ -1,5 +1,7 @@
 <?php
 require "config/config.php";
+require "config/common.php";
+
 
 session_start();
 if (empty($_SESSION["user"])) {
@@ -70,7 +72,7 @@ $user = $_SESSION["user"];
                 <div class="card card-widget">
                   <div class="card-header">
                     <div class="card-title" style="float: none; text-align: center;">
-                      <h4><?= $data["title"] ?></h4>
+                      <h4><?= escape($data["title"]) ?></h4>
                     </div>
                   </div>
                   <div class="card-body">

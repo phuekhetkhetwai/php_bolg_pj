@@ -1,7 +1,10 @@
 <?php
-require "../config/config.php";
-
 session_start();
+
+require "../config/config.php";
+require "../config/common.php";
+
+
 if (empty($_SESSION["user"])) {
     header("location: login.php");
     exit();
@@ -79,6 +82,7 @@ if ($_POST) {
                 <div class="card">
                     <div class="card-body">
                         <form action="add.php" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="_token" value="<?= $_SESSION['_token'] ?>">
                             <div class="form-group">
                                 <label for="title">Title</label><p class="text-danger"><?php echo empty($titleError) ? "" : "*".$titleError ?></p>
                                 <input type="text" name="title" id="title" class="form-control">

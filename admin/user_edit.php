@@ -1,7 +1,9 @@
 <?php
-require "../config/config.php";
-
 session_start();
+
+require "../config/config.php";
+require "../config/common.php";
+
 if (empty($_SESSION["user"])) {
     header("location: login.php");
     exit();
@@ -18,7 +20,7 @@ if ($_POST) {
     $id = $_POST["id"];
     $name = $_POST["name"];
     $email = $_POST["email"];
-    $password = $_POST["password"];
+    $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
 
     if (empty($_POST["name"]) || empty($_POST["email"]) ) {
         if(empty($_POST["name"])) {
@@ -105,15 +107,16 @@ $result = $statement->fetch();
                 <div class="card">
                     <div class="card-body">
                         <form action="" method="post">
-                        <input type="hidden" name="id" value="<?= $result['id'] ?>">
+                            <input type="hidden" name="_token" value="<?= $_SESSION['_token'] ?>">
+                            <input type="hidden" name="id" value="<?= $result['id'] ?>">
                             <div class="form-group">
                                 <label for="name">Name</label><p class="text-danger"><?php echo empty($nameError) ? "" : "*".$nameError ?></p>
-                                <input type="text" name="name" id="name" class="form-control" value="<?= $result['name'] ?>">
+                                <input type="text" name="name" id="name" class="form-control" value="<?= escape($result['name']) ?>">
                             </div>
 
                             <div class="form-group">
                                 <label for="email">Email</label><p class="text-danger"><?php echo empty($emailError) ? "" : "*".$emailError ?></p>
-                                <input type="email" name="email" id="email" class="form-control" value="<?= $result['email'] ?>">
+                                <input type="email" name="email" id="email" class="form-control" value="<?= escape($result['email']) ?>">
                             </div>
 
                             <div class="form-group">

@@ -1,5 +1,6 @@
 <?php
 require "../config/config.php";
+require "../config/common.php";
 
 session_start();
 if (empty($_SESSION["user"])) {
@@ -97,8 +98,8 @@ if(isset($_POST["search"]) || isset($_COOKIE["search"])) {
                   <?php foreach ($datas as $data): ?>
                     <tr>
                       <td><?= $i ?></td>
-                      <td><?= $data["title"] ?></td>
-                      <td><?= substr($data["content"], 0, 100) ?></td>
+                      <td><?= escape($data["title"]) ?></td>
+                      <td><?= escape(substr($data["content"], 0, 100)) ?></td>
                       <td>
                         <a href="edit.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-warning">Edit</a>
                         <a href="delete.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</a>

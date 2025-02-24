@@ -1,5 +1,9 @@
 <?php
+
+    session_start();
+
     require "config/config.php";
+    require "config/common.php";
 
     if($_POST) {
 
@@ -23,7 +27,7 @@
     } else {
         $name = $_POST["name"];
         $email = $_POST["email"];
-        $password = $_POST["password"];
+        $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
 
         $statement = $db->prepare("SELECT * FROM users WHERE email=:email");
 
@@ -85,6 +89,7 @@
       <p class="login-box-msg">Register New Account</p>
 
       <form action="register.php" method="post">
+      <input type="hidden" name="_token" value="<?= $_SESSION['_token'] ?>">
       <p class="text-danger"><?php echo empty($nameError) ? "" : "*".$nameError ?></p>
       <div class="input-group mb-3">
           <input type="text" name="name" class="form-control" placeholder="Name">

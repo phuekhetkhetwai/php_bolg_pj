@@ -1,7 +1,9 @@
 <?php
-require "../config/config.php";
-
 session_start();
+
+require "../config/config.php";
+require "../config/common.php";
+
 if (empty($_SESSION["user"])) {
     header("location: login.php");
     exit();
@@ -35,7 +37,8 @@ if($_POST) {
     } else {
         $name = $_POST["name"];
         $email = $_POST["email"];
-        $password = $_POST["password"];
+        $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
+        
         if(isset($_POST["role"])){
             $role = $_POST["role"];
         } else {
@@ -83,6 +86,7 @@ if($_POST) {
                 <div class="card">
                     <div class="card-body">
                         <form action="user_add.php" method="post">
+                        <input type="hidden" name="_token" value="<?= $_SESSION['_token'] ?>">
                             <div class="form-group">
                                 <label for="name">Name</label><p class="text-danger"><?php echo empty($nameError) ? "" : "*".$nameError ?></p>
                                 <input type="text" name="name" id="name" class="form-control">

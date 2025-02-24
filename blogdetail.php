@@ -1,7 +1,9 @@
 <?php
-require "config/config.php";
-
 session_start();
+
+require "config/config.php";
+require "config/common.php";
+
 if (empty($_SESSION["user"])) {
   header("location: login.php");
   exit();
@@ -77,7 +79,7 @@ if ($_POST) {
               <div class="card card-widget">
                 <div class="card-header">
                   <div class="card-title" style="float: none; text-align: center;">
-                    <h4><?= $data['title'] ?></h4>
+                    <h4><?= escape($data['title']) ?></h4>
                   </div>
                 </div>
                 <!-- /.card-header -->
@@ -88,7 +90,7 @@ if ($_POST) {
                     </div>
                   </div>
                   <br><br>
-                  <p><?= $data['content'] ?></p>
+                  <p><?= escape($data['content']) ?></p>
                   <br>
                   <h4>Comments</h4>
                   <hr>
@@ -123,10 +125,10 @@ if ($_POST) {
 
                       <div class="comment-text" style="margin-left: 0px !important;">
                         <span class="username">
-                          <?= $result['name'] ?>
-                          <span class="text-muted float-right"><?= $data['created_at'] ?></span>
+                          <?= escape($result['name']) ?>
+                          <span class="text-muted float-right"><?= escape($data['created_at']) ?></span>
                         </span><!-- /.username -->
-                        <?= $data['content'] ?>
+                        <?= escape($data['content']) ?>
                       </div>
                       <!-- /.comment-text -->
                     </div>
@@ -136,8 +138,9 @@ if ($_POST) {
                 <?php endforeach ?>
                 <div class="card-footer">
                   <form action="" method="post">
+                  <input type="hidden" name="_token" value="<?= $_SESSION['_token'] ?>">
                     <div>
-                    <p class="text-danger"><?php echo empty($contentError) ? "" : "*".$contentError ?></p>
+                      <p class="text-danger"><?php echo empty($contentError) ? "" : "*".$contentError ?></p>
                       <input type="text" name="content" class="form-control form-control-sm" placeholder="Press enter to post comment">
                     </div>
                   </form>

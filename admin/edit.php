@@ -1,7 +1,9 @@
 <?php
-require "../config/config.php";
-
 session_start();
+
+require "../config/config.php";
+require "../config/common.php";
+
 if (empty($_SESSION["user"])) {
     header("location: login.php");
     exit();
@@ -94,15 +96,16 @@ $result = $statement->fetch();
                 <div class="card">
                     <div class="card-body">
                         <form action="" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="_token" value="<?= $_SESSION['_token'] ?>">
                             <div class="form-group">
                                 <input type="hidden" name="id" value="<?= $result['id'] ?>">
                                 <label for="title">Title</label><p class="text-danger"><?php echo empty($titleError) ? "" : "*".$titleError ?></p>
-                                <input type="text" name="title" id="title" class="form-control" value="<?= $result['title'] ?>">
+                                <input type="text" name="title" id="title" class="form-control" value="<?= escape($result['title']) ?>">
                             </div>
 
                             <div class="form-group">
                                 <label for="content">Content</label><p class="text-danger"><?php echo empty($contentError) ? "" : "*".$contentError ?></p>
-                                <textarea name="content" id="content" class="form-control" rows="8"><?= $result['content'] ?></textarea>
+                                <textarea name="content" id="content" class="form-control" rows="8"><?= escape($result['content']) ?></textarea>
                             </div>
 
                             <div class="form-group">

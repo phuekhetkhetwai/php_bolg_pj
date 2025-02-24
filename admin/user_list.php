@@ -1,5 +1,6 @@
 <?php
 require "../config/config.php";
+require "../config/common.php";
 
 session_start();
 if (empty($_SESSION["user"])) {
@@ -97,8 +98,8 @@ if(isset($_POST["search"]) || isset($_COOKIE["search"])) {
                   <?php foreach ($datas as $data): ?>
                     <tr>
                       <td><?= $i ?></td>
-                      <td><?= $data["name"] ?></td>
-                      <td><?= $data["email"] ?></td>
+                      <td><?= escape($data["name"]) ?></td>
+                      <td><?= escape($data["email"]) ?></td>
                       <td><?php if($data["role"] == 0){echo "user";}else{echo "admin";}?></td>
                       <td>
                         <a href="user_edit.php?id=<?= $data["id"]; ?>;" class="btn btn-sm btn-warning">Edit</a>
