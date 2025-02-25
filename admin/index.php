@@ -1,8 +1,9 @@
 <?php
+session_start();
+
 require "../config/config.php";
 require "../config/common.php";
 
-session_start();
 if (empty($_SESSION["user"])) {
   header("location: login.php");
   exit();
@@ -17,6 +18,7 @@ if($user["role"] != 1) {
 ?>
 
 <!-- header -->
+
 <?php include("header.php"); ?>
 
 <?php

@@ -125,7 +125,7 @@ if ($_POST) {
 
                       <div class="comment-text" style="margin-left: 0px !important;">
                         <span class="username">
-                          <?= escape($result['name']) ?>
+                          <?= empty($result) ? "invalid user" : escape($result["name"]) ?>
                           <span class="text-muted float-right"><?= escape($data['created_at']) ?></span>
                         </span><!-- /.username -->
                         <?= escape($data['content']) ?>
